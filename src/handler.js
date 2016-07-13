@@ -5,63 +5,9 @@ const irc = require('irc');
 const assert = require('assert');
 const moment = require('moment');
 
-const path = require('path');
-const Socket = require('net').Socket;
-const spawn = require('child_process').spawn;
-
 const RxbotLogger = require('rxbot-logger');
 
-function MicroService(service_name) {
-	let service_instance;
-	let service_socket = new Socket();
-	let service_path = path.join(__dirname, 'services', `${service_name}.py`);
-	let regexp_listening = /LISTENING ON (\S+)/i;
-
-	this.isRunning = false;
-	this.command = new RegExp(`^!${service_name} (.+)$`, 'i');
-
-	try {
-		service_instance = spawn(service_path);
-
-		service_instance.stdout.on('data', data => {
-			data = data.toString();
-
-			if (regexp_listening.test(data)) {
-				let [, socket_path] = data.match(regexp_listening);
-
-				service_socket.destroy();
-				service_socket = service_socket.connect(socket_path);
-				service_socket.on('close', code => this.stop());
-
-				this.isRunning = true;
-			}
-		});
-
-		service_instance.stderr.on('data', data => {
-			console.error('stderr', data.toString());
-		});
-
-		service_instance.on('close', code => this.stop());
-	} catch (error) {
-		console.error(error);
-	}
-
-	this.stop = function () {
-		service_socket.destroy();
-		service_instance.stdin.pause();
-		service_instance.kill();
-
-		this.isRunning = false;
-	};
-
-	this.send = function (data) {
-		data = data.slice(service_name.length + 2);
-
-		if (this.isRunning) {
-			service_socket.write(data, 'utf-8');
-		}
-	};
-}
+const Service = require('./service');
 
 let defaults = {
 	logLevel: 'error'
@@ -85,7 +31,7 @@ function Handler(client, options) {
 	this.logger = new RxbotLogger();
 	this.logger.logLevel = this.settings.logLevel;
 
-	this.microservice = new MicroService(this.settings.service);
+	this.service = new Service(this.settings.service);
 
 	//  ____  _
 	// / ___|| |_ _ __ ___  __ _ _ __ ___  ___
@@ -96,12 +42,16 @@ function Handler(client, options) {
 
 	let rawStream = Rx.Observable.fromEvent(client, 'raw');
 
+	let shutdownStream = rawStream.filter(message => {
+		return message.command === 'ERROR' && message.args[0].slice(0, 12) === 'Closing Link';
+	});
+
 	let channelStream = rawStream.filter(message => {
 		return message.command === 'PRIVMSG' && message.args[0] === this.settings.channel;
 	});
 
 	let bangStream = channelStream.filter(message => {
-		return this.microservice.command.test(message.args[1]);
+		return this.service.command.test(message.args[1]);
 	});
 
 	//  ____        _                   _       _   _
@@ -116,14 +66,22 @@ function Handler(client, options) {
 		this.logger.log('debug', '=== bangStream ===');
 		this.logger.log('debug', message);
 
-		if (this.microservice.isRunning) {
-			this.microservice.send(message.args[1]);
-		} else {
-			this.logger.log('error', 'Microservice not running!');
-		}
+		this.service.send(message.args[1]);
 
 		this.logger.log('debug', '=== /bangStream ===');
 	});
+
+	shutdownStream.subscribe(message => {
+		this.logger.log('debug', '=== shutdownStream ===');
+		this.service.stop();
+		this.logger.log('debug', '=== /shutdownStream ===');
+	});
+
+	this.service.subscribe(
+		data => this.logger.log('debug', data),
+		error => this.logger.log('debug', error),
+		code => this.logger.log('debug', code)
+	);
 }
 
 module.exports = Handler;
