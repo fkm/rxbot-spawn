@@ -1,5 +1,5 @@
 {
-  "name": "rxbot-admin",
+  "name": "rxbot-spawn",
   "version": "0.0.0",
   "main": "src/handler.js",
   "dependencies": {
