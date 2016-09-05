@@ -17,6 +17,7 @@ function Handler(client, options) {
 	assert(this instanceof Handler);
 //	assert(client instanceof irc.Client);
 	assert(options.service && options.service.length > 0);
+	assert(options.channel && options.channel.length > 1);
 
 	//  ____                            _   _
 	// |  _ \ _ __ ___  _ __   ___ _ __| |_(_) ___  ___
@@ -78,7 +79,12 @@ function Handler(client, options) {
 	});
 
 	this.service.subscribe(
-		data => this.logger.log('debug', data),
+		data => {
+			if (data.charAt(0) === '!') {
+				client.say(this.settings.channel, data);
+			}
+			this.logger.log('debug', data)
+		},
 		error => this.logger.log('debug', error),
 		code => this.logger.log('debug', code)
 	);
