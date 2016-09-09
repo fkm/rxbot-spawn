@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+#!/usr/bin/python3.4
 
 # http://cmusphinx.sourceforge.net/wiki/gstreamer
 # http://cmusphinx.sourceforge.net/wiki/download
@@ -10,7 +10,7 @@
 
 import sys
 from inspect import currentframe, getfile
-from os.path import basename, splitext
+from os.path import abspath, basename, dirname, splitext
 import gi
 
 try:
@@ -21,6 +21,7 @@ except ValueError:
 	sys.exit(1)
 
 scriptname = splitext(basename(getfile(currentframe())))[0]
+scriptpath = dirname(abspath(getfile(currentframe())))
 commands = {
 	"what time is it": "!time now",
 	"play music": "!music play"
@@ -34,7 +35,10 @@ def element_message(bus, msg):
 #	confidence = msg.get_structure().get_value("confidence")
 
 	if msg.get_structure().get_value("final"):
+		# Detection may include the test-string several times.
+		# This must be sanitized. Either in PocketSphinx or here before printing.
 		print(commands[hypothesis])
+		sys.stdout.flush()
 
 def main():
 	Gst.init(None)
@@ -55,11 +59,10 @@ def main():
 	queue.set_property("max-size-bytes", 0)
 
 	asr = pipeline.get_by_name("asr")
-	asr.set_property("logfp", "/dev/null")
 	asr.set_property("dict", "/usr/local/share/pocketsphinx/model/en-us/cmudict-en-us.dict")
 	asr.set_property("lm", "/usr/local/share/pocketsphinx/model/en-us/en-us.lm.bin")
 	asr.set_property("hmm", "/usr/local/share/pocketsphinx/model/en-us/en-us/")
-	asr.set_property("kws", "./{0}.txt".format(scriptname))
+	asr.set_property("kws", "{0}/{1}.txt".format(scriptpath, scriptname))
 
 	bus = pipeline.get_bus()
 	bus.add_signal_watch()
@@ -73,7 +76,6 @@ def main():
 	except KeyboardInterrupt:
 		pipeline.set_state(Gst.State.NULL)
 		loop.quit()
-		print()
 
 if __name__ == "__main__":
 	main()

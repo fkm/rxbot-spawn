@@ -7,8 +7,13 @@ const spawn = require('child_process').spawn;
 function Service(name, args) {
 	assert(typeof name === 'string');
 
-	let child = spawn(path.join(__dirname, 'services', name + '.py'), args);
+	args = args || [];
+	args = ['-u', path.join(__dirname, 'services', name + '.py')].concat(args);
 
+	// TODO Find a way to execute the script directly with no buffer.
+	let child = spawn('python3', args);
+
+	// TODO Event backlog. Maybe use Rx Subjects.
 	let listeners = {
 		normal: function () {},
 		error: function () {},
@@ -27,7 +32,9 @@ function Service(name, args) {
 	};
 
 	this.stop = function () {
+		// TODO End process gracefully.
 		child.stdin.end();
+		child.kill('SIGINT');
 	};
 
 	this.subscribe = function (normal, error, end) {

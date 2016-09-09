@@ -1,11 +1,20 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3.4
+# Don't forget to install python3-espeak
 
-import fileinput
+from sys import stdin
 from espeak import espeak
 from time import sleep
 
-for line in fileinput.input():
-	espeak.synth(line.rstrip('\n'))
-	while espeak.is_playing():
-		sleep(1)
+try:
+	while True:
+		line = stdin.readline()
+
+		if line == '':
+			continue
+
+		espeak.synth(line.rstrip('\n'))
+		while espeak.is_playing():
+			sleep(1)
+
+except KeyboardInterrupt:
+	pass
