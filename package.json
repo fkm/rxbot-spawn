@@ -1,13 +1,13 @@
 {
-  "name": "rxbot-spawn",
-  "version": "0.0.0",
-  "license": "MIT",
-  "main": "src/handler.js",
-  "dependencies": {
-    "assert": "^1.4.1",
-    "irc": "^0.5.0",
-    "moment": "^2.13.0",
-	"rxbot-logger": "git@github.com:fkm/rxbot-logger.git",
-    "rxjs": "^5.0.0-beta.8"
-  }
+	"name": "rxbot-spawn",
+	"version": "0.0.0",
+	"license": "MIT",
+	"main": "src/handler.js",
+	"dependencies": {
+		"assert": "^1.4.1",
+		"irc": "^0.5.0",
+		"moment": "^2.13.0",
+		"rxbot-logger": "https://github.com/fkm/rxbot-logger.git",
+		"rxjs": "^5.0.0-beta.8"
+	}
 }
