@@ -6,6 +6,8 @@ WHOAMI=$(whoami)
 NODEJS_VERSION="v4.5.0"
 PATH_LOCAL="/usr/local"
 
+CPU_CORES=2
+
 if [ ${WHOAMI} != "root" ]; then
 	echo "You need to be root."
 	exit 1
@@ -35,6 +37,6 @@ fi
 git checkout ${NODEJS_VERSION} || true
 ./configure
 make clean
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make check
 make install

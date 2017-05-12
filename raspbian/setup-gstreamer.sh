@@ -21,6 +21,8 @@ PATH_LOCAL="/usr/local"
 PATH_VC="/opt/vc"
 PATH_PYTHON="/usr/bin/python3"
 
+CPU_CORES=2
+
 # https://lists.freedesktop.org/archives/gstreamer-bugs/2013-May/102925.html
 export LD_LIBRARY_PATH=${PATH_LOCAL}/lib/
 
@@ -28,16 +30,118 @@ apt-get update
 apt-get upgrade -y
 
 # The completely essential things
-apt-get install -y valgrind build-essential autotools-dev automake autoconf libtool autopoint libxml2-dev zlib1g-dev libglib2.0-dev pkg-config bison flex python git
+apt-get install -y \
+	autoconf \
+	automake \
+	autopoint \
+	autotools-dev \
+	bison \
+	build-essential \
+	flex \
+	git \
+	libglib2.0-dev \
+	libtool \
+	libxml2-dev \
+	pkg-config \
+	python \
+	valgrind \
+	zlib1g-dev
 
 # The optional dependencies of all the plugins
-apt-get install -y gtk-doc-tools libasound2-dev libgudev-1.0-dev libxt-dev libvorbis-dev libcdparanoia-dev libpango1.0-dev libtheora-dev libvisual-0.4-dev iso-codes libgtk-3-dev libraw1394-dev libiec61883-dev libavc1394-dev libv4l-dev libcairo2-dev libcaca-dev libspeex-dev libpng-dev libshout3-dev libjpeg-dev libaa1-dev libflac-dev libdv4-dev libtag1-dev libwavpack-dev libpulse-dev libsoup2.4-dev libbz2-dev libcdaudio-dev libdc1394-22-dev ladspa-sdk libass-dev libcurl4-gnutls-dev libdca-dev libdirac-dev libdvdnav-dev libexempi-dev libexif-dev libfaad-dev libgme-dev libgsm1-dev libiptcdata0-dev libkate-dev libmimic-dev libmms-dev libmodplug-dev libmpcdec-dev libofa0-dev libopus-dev librsvg2-dev librtmp-dev libschroedinger-dev libslv2-dev libsndfile1-dev libsoundtouch-dev libspandsp-dev libx11-dev libxvidcore-dev libzbar-dev libzvbi-dev liba52-0.7.4-dev libcdio-dev libdvdread-dev libmad0-dev libmp3lame-dev libmpeg2-4-dev libopencore-amrnb-dev libopencore-amrwb-dev libsidplay1-dev libtwolame-dev libx264-dev libvpx-dev libwebp-dev python-gi-dev python3-dev libgirepository1.0-dev python3-gst-1.0
+apt-get install -y \
+	gtk-doc-tools \
+	libasound2-dev \
+	libgudev-1.0-dev \
+	libxt-dev \
+	libvorbis-dev \
+	libcdparanoia-dev \
+	libpango1.0-dev \
+	libtheora-dev \
+	libvisual-0.4-dev \
+	iso-codes \
+	libgtk-3-dev \
+	libraw1394-dev \
+	libiec61883-dev \
+	libavc1394-dev \
+	libv4l-dev \
+	libcairo2-dev \
+	libcaca-dev \
+	libspeex-dev \
+	libpng-dev \
+	libshout3-dev \
+	libjpeg-dev \
+	libaa1-dev \
+	libflac-dev \
+	libdv4-dev \
+	libtag1-dev \
+	libwavpack-dev \
+	libpulse-dev \
+	libsoup2.4-dev \
+	libbz2-dev \
+	libcdaudio-dev \
+	libdc1394-22-dev \
+	ladspa-sdk \
+	libass-dev \
+	libcurl4-gnutls-dev \
+	libdca-dev \
+	libdirac-dev \
+	libdvdnav-dev \
+	libexempi-dev \
+	libexif-dev \
+	libfaad-dev \
+	libgme-dev \
+	libgsm1-dev \
+	libiptcdata0-dev \
+	libkate-dev \
+	libmimic-dev \
+	libmms-dev \
+	libmodplug-dev \
+	libmpcdec-dev \
+	libofa0-dev \
+	libopus-dev \
+	librsvg2-dev \
+	librtmp-dev \
+	libschroedinger-dev \
+	libslv2-dev \
+	libsndfile1-dev \
+	libsoundtouch-dev \
+	libspandsp-dev \
+	libx11-dev \
+	libxvidcore-dev \
+	libzbar-dev \
+	libzvbi-dev \
+	liba52-0.7.4-dev \
+	libcdio-dev \
+	libdvdread-dev \
+	libmad0-dev \
+	libmp3lame-dev \
+	libmpeg2-4-dev \
+	libopencore-amrnb-dev \
+	libopencore-amrwb-dev \
+	libsidplay1-dev \
+	libtwolame-dev \
+	libx264-dev \
+	libvpx-dev \
+	libwebp-dev \
+	python-gi-dev \
+	python3-dev \
+	libgirepository1.0-dev \
+	python3-gst-1.0
 
 # https://bugs.launchpad.net/pomodoro-indicator/+bug/1370221
-apt-get install -y gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0
+apt-get install -y \
+	gir1.2-gstreamer-1.0 \
+	gir1.2-gst-plugins-base-1.0
 
 # Additional stuff
-apt-get install -y xinit xserver-xorg-video-fbdev omxplayer libxv-dev libwayland-dev libusb-1.0 libopenal-dev
+apt-get install -y \
+	xinit \
+	xserver-xorg-video-fbdev \
+	omxplayer \
+	libxv-dev \
+	libwayland-dev \
+	libusb-1.0 \
+	libopenal-dev
 
 cd ${PATH_LOCAL}/src/
 [ ! -d gstreamer ] && mkdir gstreamer
@@ -57,7 +161,7 @@ cd gstreamer
 make uninstall || true
 git checkout ${VERSION_GSTREAMER} || true
 ./autogen.sh --disable-gtk-doc
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..
 
@@ -65,7 +169,7 @@ cd orc
 make uninstall || true
 git checkout ${VERSION_ORC} || true
 ./autogen.sh --disable-gtk-doc
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..
 
@@ -73,7 +177,7 @@ cd gst-plugins-base
 make uninstall || true
 git checkout ${VERSION_GST_BASE} || true
 ./autogen.sh --disable-gtk-doc
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..
 
@@ -81,7 +185,7 @@ cd gst-plugins-good
 make uninstall || true
 git checkout ${VERSION_GST_GOOD} || true
 ./autogen.sh --disable-gtk-doc
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..
 
@@ -89,7 +193,7 @@ cd gst-plugins-ugly
 make uninstall || true
 git checkout ${VERSION_GST_UGLY} || true
 ./autogen.sh --disable-gtk-doc
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..
 
@@ -97,7 +201,7 @@ cd gst-libav
 make uninstall || true
 git checkout ${VERSION_GST_LIBAV} || true
 ./autogen.sh --disable-gtk-doc
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..
 
@@ -131,6 +235,6 @@ cd gst-python
 git checkout ${VERSION_GST_PYTHON} || true
 # --with-pygi-overrides-dir https://github.com/Kurento/bugtracker/issues/56
 PYTHON=${PATH_PYTHON} ./autogen.sh --prefix=${PATH_LOCAL} --with-pygi-overrides-dir=${PATH_LOCAL}/lib/python3.4/site-packages/gi/overrides/
-make -j3
+make -j$(expr ${CPU_CORES} + 1)
 make install
 cd ..

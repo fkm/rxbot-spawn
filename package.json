@@ -2,6 +2,7 @@
 	"name": "rxbot-spawn",
 	"version": "0.0.0",
 	"license": "MIT",
+	"author": "Florian Mäder <florian@maederbiel.ch>",
 	"main": "src/handler.js",
 	"dependencies": {
 		"assert": "^1.4.1",
