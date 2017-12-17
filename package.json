@@ -3,10 +3,9 @@
 	"version": "0.0.0",
 	"license": "MIT",
 	"author": "Florian Mäder <florian@maederbiel.ch>",
-	"main": "src/module.js",
+	"main": "lib/module.js",
 	"dependencies": {
-		"assert": "^1.4.1",
-		"moment": "^2.13.0"
+		"assert": "^1.4.1"
 	},
 	"peerDependencies": {
 		"rxbot": "fkm/rxbot",
