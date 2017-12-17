@@ -3,12 +3,14 @@
 	"version": "0.0.0",
 	"license": "MIT",
 	"author": "Florian Mäder <florian@maederbiel.ch>",
-	"main": "src/handler.js",
+	"main": "src/module.js",
 	"dependencies": {
 		"assert": "^1.4.1",
+		"moment": "^2.13.0"
+	},
+	"peerDependencies": {
+		"rxbot": "fkm/rxbot",
 		"irc": "^0.5.0",
-		"moment": "^2.13.0",
-		"rxbot-logger": "https://github.com/fkm/rxbot-logger.git",
-		"rxjs": "^5.0.0-beta.8"
+		"rxjs": "^5.5.0"
 	}
 }
