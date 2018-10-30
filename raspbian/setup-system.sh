@@ -4,8 +4,8 @@ set -e
 
 WHOAMI=$(whoami)
 WLAN_CONF_PATH="/etc/wpa_supplicant/wpa_supplicant.conf"
-WLAN_CONN_SSID="b11"
-WLAN_CONN_PASS="paradise.bieu@burgunderweg"
+WLAN_CONN_SSID="mynetwork"
+WLAN_CONN_PASS="mypassphrase"
 
 if [ ${WHOAMI} != "root" ]; then
 	echo "You need to be root."
