@@ -1,8 +1,6 @@
 # rxbot-spawn
 Microservice Module for RxBot
 
-[Documentation](doc/rxbot-spawn.md)
-
 ## Installation
 1. Clone the [main RxBot repository](https://github.com/fkm/rxbot).
 2. Adjust the **package.json** and **config.json** files according to your needs.
