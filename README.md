@@ -1,5 +1,7 @@
-# rxbot-spawn
+# rxbot-spawn (DEPRECATED)
 Microservice Module for RxBot
+
+**This module is deprecated and will be replaced by Javascript-only modules.**
 
 ## Installation
 1. Clone the [main RxBot repository](https://github.com/fkm/rxbot).
