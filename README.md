@@ -1,4 +1,4 @@
-# rxbot-spawn (DEPRECATED)
+# rx-irc-bot-spawn (DEPRECATED)
 Microservice Module for RxBot
 
 **This module is deprecated and will be replaced by Javascript-only modules.**
